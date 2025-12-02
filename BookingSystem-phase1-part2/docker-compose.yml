@@ -1,0 +1,69 @@
+# ZAP Report – Round 2 (Phase 1, Part 2)
+
+## 1. General Information
+- **Application:** Booking System – Phase 1 – Part 2 (Updated Version)
+- **Testers:** Roshani Pathak and Sushil poudel
+- **Date:** 02.12.2025
+- **Tool Used:** OWASP ZAP 2.16.1
+- **Testing Type:** Automated security scan
+- **Environment:** Windows 11, Docker Desktop, Opera Browser
+
+## 2. Scope of the Scan
+This Round 2 scan checks whether the issues found in Round 1 have been fixed and identifies any new risks.
+
+**Pages scanned:**
+- `/register`
+
+Exclusions:
+- Login, booking, admin functionality (not implemented in Phase 1)
+
+## 3. Summary of Results (Round 2)
+ZAP Round 2 produced two alerts:
+
+1. **Absence of Anti-CSRF Tokens** – Medium  
+2. **User-Agent Fuzzing** – Informational  
+
+**Important:**  
+Missing security headers from Round 1 (CSP, X-Frame-Options, X-Content-Type-Options) **did NOT appear** in Round 2. This means they are now considered **fixed**.
+
+## 4. Detailed Findings (Round 2)
+
+### Finding ZR2-01 – Absence of Anti-CSRF Tokens
+- **Severity:** Medium  
+- **Status vs Round 1:** New  
+- **Description:**  
+  ZAP detected that the registration form does not include anti-CSRF tokens.  
+  Without CSRF tokens, attackers could trick authenticated users into unknowingly submitting requests.
+- **Recommendation:**  
+  Implement CSRF protection using secure tokens in all HTML forms.
+
+---
+
+### Finding ZR2-02 – User-Agent Fuzzing Differences
+- **Severity:** Info  
+- **Status vs Round 1:** New  
+- **Description:**  
+  ZAP tested multiple User-Agent headers (e.g., mobile browser, bots, crawlers) and received varied responses.  
+  This is informational and does not indicate a direct vulnerability.
+- **Recommendation:**  
+  Standardize User-Agent handling if needed and monitor logs for unusual request patterns.
+
+---
+
+## 5. Comparison to Round 1
+| Issue from Round 1 | Round 1 Status | Round 2 Status |
+|---------------------|----------------|----------------|
+| Missing Security Headers | Present | **Fixed** |
+| Absence of Anti-CSRF Tokens | Not reported | **New** |
+| User-Agent Fuzzing | Not reported | **New** |
+
+## 6. Conclusion
+The updated application fixed the missing header issues detected in Round 1.  
+However, ZAP found two new alerts in Round 2:
+
+- Missing CSRF protection  
+- User-Agent response inconsistencies  
+
+These should be considered in future development phases.
+
+_End of ZAP Round 2 Report._
