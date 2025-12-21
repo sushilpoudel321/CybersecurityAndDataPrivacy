@@ -1,77 +1,42 @@
-# Authorization Test Report – Phase 3
+Administrator
+✅ Can do
+Can register and log in as administrator — /login + /register
+Observation: Admin registration and login succeed; admin is redirected to admin dashboard
+Spec: ✔️ Matches spec (point 2 – registered users can log in; point 4 – admin role)
 
-This document describes authorization testing performed on the Booking System
-(Phase 3). The goal was to verify what each role (Guest, Reserver, Administrator)
-can and cannot do, and to identify any authorization issues in the implementation.
+Can access resource form via /resources
+Observation: Resource creation form is displayed; admin can fill in and submit to create a resource
+Spec: ✔️ Matches spec (point 4 – admin can add resources)
 
-Testing was conducted using:
-- Manual browser testing
-- OWASP ZAP scanning
+Can access reservation API — GET /api/reservations
+Observation: Admin receives full reservation data in JSON, including all reservations from all users
+Spec: ✔️ Matches spec (point 4 – admin can view/manage all reservations)
 
-Target application:
-http://localhost:8003
+Can access users API — GET /api/users
+Observation: Admin receives full user list in JSON, including usernames, roles, and user tokens
+Spec: ✔️ Matches spec (point 4 – admin can view all users)
 
----
+Can access reservation details — /reservation?id=3
+Observation: Administrator can view reservation details for any reservation, regardless of owner
+Spec: ✔️ Matches Point 4 – admin can manage all reservations
 
-## 🧑‍🦲 Guest (Not Logged In)
+Can update any reservation — /reservation?id=3
+Observation: Administrator can update reservations created by any reserver via UI or direct URL
+Spec: ✔️ Matches Point 4 – full reservation management
 
-### ✅ Can do
-- Can view the landing page — `/`
-- Can view booked resources without seeing reserver identities — `/`
-- Can access login page — `/login`
-- Can access registration page — `/register`
+Can delete any reservation — /reservation?id=3
+Observation: Administrator can delete reservations created by any user via UI or direct URL
+Spec: ✔️ Matches Point 4 – full reservation management
 
-### ❌ Cannot do
-- Cannot add a new resource — button disabled
-- Cannot add a new reservation — button disabled
-- Cannot access reservation creation page — `/reservation`
-- Cannot access profile page — `/profile`
-- Cannot access admin pages — `/admin`
+❌ Cannot do / Issues
+Cannot access admin resource creation page — /admin/resources/new
+Observation: Status page shows “Not Found” with back-to-home button; UI link missing, but admin can still create resources via /resources
+Spec: ⚠️ Not defined in spec (UI inconsistency — admin functionality exists but the dedicated admin page is unavailable)
 
-✔ Guest behavior matches the specifications.
+Cannot delete a reserver — /admin/users/delete/:id
+Observation: Status page shows “Not Found” with back-to-home button; admin cannot delete users via the UI/API
+Spec: ⚠️ Not defined in spec (expected: admin should be able to delete users; current behavior prevents it)
 
----
-
-## 🧑‍💼 Reserver (Logged In User)
-
-### ✅ Can do
-- Can log in and log out — `/login`, `/logout`
-- Can view the landing page after login — `/`
-- Can create a new reservation — “Add a new reservation” button works
-- Can view booked resources — `/`
-- ⚠️ Can add a new resource — “Add a new resource” button works (unexpected)
-
-### ❌ Cannot do
-- Cannot access admin dashboard — `/admin`
-- Cannot access admin users page — `/admin/users`
-- Cannot delete users — `/api/admin/users/:id`
-
-### ⚠️ Authorization Issues
-- A Reserver can add new resources, even though resource management should be
-  restricted to the Administrator role according to the specifications.
-- This indicates missing or insufficient backend authorization enforcement.
-
----
-
-## 🧑‍💼🛡️ Administrator
-
-### ✅ Can do
-- Can access admin dashboard — `/admin`
-- Can add, modify, and delete resources — `/admin/resources`
-- Can manage all reservations — `/admin/reservations`
-- Can view and delete users — `/admin/users`
-
-### ❌ Cannot do
-- No unnecessary or restricted actions observed beyond the administrator role.
-
-✔ Administrator behavior matches the specifications.
-
----
-
-## 🔍 Summary
-
-Authorization controls are partially enforced.
-Guest access is correctly restricted.
-A critical authorization issue was identified where the Reserver role can perform
-administrator-only actions such as adding new resources.
-Administrator functionality behaves as expected.
+Cannot manage all reservations — /admin/reservations
+Observation: Status page shows “Not Found” with back-to-home button; admin cannot access reservation management UI
+Spec: ⚠️ Not defined in spec (expected: admin should be able to view/manage all reservations)
